@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>90 años de la Abuela · Fiesta en familia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Figtree:ital,wght@0,300..700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --marfil:#FFF8EE;
+    --tinta:#33261F;
+    --moras:#7A2E4A;      /* berry profundo */
+    --caléndula:#E8A33D;  /* dorado cálido */
+    --salvia:#8FAE8B;     /* verde suave */
+    --rosa:#F3D9CF;
+    --radio:8px;
+    --display:"Bricolage Grotesque", system-ui, sans-serif;
+    --body:"Figtree", system-ui, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    background:var(--marfil);
+    color:var(--tinta);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  /* ---------- CONFETI AMBIENTAL ---------- */
+  .confeti{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .confeti span{
+    position:absolute;top:-20px;
+    width:10px;height:10px;border-radius:3px;
+    opacity:.75;
+    animation:caer linear infinite;
+  }
+  @keyframes caer{
+    to{transform:translateY(110vh) rotate(720deg)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .confeti{display:none}
+    *{animation:none!important;transition:none!important}
+  }
+
+  /* ---------- MODAL DE CONTRASEÑA ---------- */
+  .candado{
+    position:fixed;inset:0;z-index:200;
+    background:var(--marfil);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+  }
+  .candado.abierto ~ header, .candado.abierto ~ main, .candado.abierto ~ footer{
+    filter:blur(6px);pointer-events:none;user-select:none;
+  }
+  .candado[hidden]{display:none}
+  .tarjeta-candado{
+    background:#fff;
+    border:2px solid var(--tinta);
+    border-radius:var(--radio);
+    box-shadow:8px 8px 0 var(--moras);
+    padding:40px 32px;
+    max-width:400px;width:100%;
+    text-align:center;
+  }
+  .tarjeta-candado .mini90{
+    font-family:var(--display);font-weight:800;
+    font-size:3rem;color:var(--moras);
+    line-height:1;letter-spacing:-.04em;
+  }
+  .tarjeta-candado h2{
+    font-family:var(--display);font-weight:700;
+    font-size:1.4rem;margin-top:10px;
+  }
+  .tarjeta-candado p{
+    color:#5c4c42;font-size:.95rem;margin-top:8px;
+  }
+  .campo-clave{
+    display:flex;gap:10px;margin-top:22px;
+  }
+  .campo-clave input{
+    flex:1;min-width:0;
+    font-family:var(--body);font-size:1rem;
+    padding:12px 14px;
+    border:2px solid var(--tinta);
+    border-radius:6px;
+    background:var(--marfil);
+  }
+  .campo-clave input:focus-visible{
+    outline:3px dashed var(--moras);outline-offset:2px;
+  }
+  .campo-clave button{
+    font-family:var(--display);font-weight:700;font-size:1rem;
+    padding:12px 20px;
+    border:2px solid var(--tinta);
+    border-radius:6px;
+    background:var(--caléndula);
+    cursor:pointer;
+    box-shadow:3px 3px 0 var(--tinta);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .campo-clave button:hover, .campo-clave button:focus-visible{
+    transform:translate(-2px,-2px);
+    box-shadow:5px 5px 0 var(--tinta);
+  }
+  .error-clave{
+    color:var(--moras);font-weight:600;font-size:.9rem;
+    margin-top:12px;min-height:1.4em;
+  }
+  .candado.error .tarjeta-candado{
+    animation:sacudir .35s ease;
+  }
+  @keyframes sacudir{
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-8px)}
+    75%{transform:translateX(8px)}
+  }
+
+  /* ---------- CABECERA / MENÚ ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,248,238,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:2px solid var(--tinta);
+  }
+  .nav{
+    width:100%;
+    display:flex;align-items:center;justify-content:flex-end;
+    padding:14px 24px;gap:16px;
+  }
+  .menus{display:flex;gap:12px}
+  .menus a{
+    font-family:var(--display);
+    font-weight:700;font-size:clamp(1rem,2.5vw,1.3rem);
+    text-decoration:none;color:var(--tinta);
+    padding:10px 22px;border-radius:6px;
+    border:2px solid var(--tinta);
+    background:#fff;
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+    box-shadow:3px 3px 0 var(--tinta);
+  }
+  .menus a:hover, .menus a:focus-visible{
+    transform:translate(-2px,-2px);
+    box-shadow:5px 5px 0 var(--tinta);
+  }
+  .menus a.fotos:hover{background:var(--caléndula)}
+  .menus a.video:hover{background:var(--moras);color:#fff}
+  .menus a:focus-visible{outline:3px dashed var(--moras);outline-offset:3px}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;z-index:1;
+    max-width:1000px;margin:0 auto;
+    padding:48px 24px 36px;
+    text-align:center;
+  }
+  .eyebrow{
+    display:inline-block;
+    font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    font-size:.8rem;color:var(--moras);
+    background:var(--rosa);
+    padding:6px 16px;border-radius:5px;
+    margin-bottom:18px;
+  }
+  .noventa{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(7rem,26vw,15rem);
+    line-height:.9;
+    letter-spacing:-.05em;
+    color:var(--moras);
+    position:relative;
+    display:inline-block;
+    animation:aparecer .8s ease both;
+  }
+  .noventa::after{
+    content:"años";
+    position:absolute;right:-.35em;bottom:.18em;
+    font-size:.14em;font-weight:700;
+    background:var(--caléndula);
+    color:var(--tinta);
+    padding:.3em .8em;border-radius:5px;
+    transform:rotate(-8deg);
+    box-shadow:3px 3px 0 var(--tinta);
+    letter-spacing:0;
+  }
+  @keyframes aparecer{
+    from{opacity:0;transform:translateY(24px) scale(.96)}
+    to{opacity:1;transform:none}
+  }
+  .hero h1{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(1.6rem,4.5vw,2.6rem);
+    letter-spacing:-.02em;
+    margin-top:10px;
+  }
+  .hero p.sub{
+    max-width:520px;margin:14px auto 0;
+    font-size:1.05rem;color:#5c4c42;
+  }
+  .datos{
+    display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+    margin-top:28px;
+  }
+  .dato{
+    background:#fff;border:2px solid var(--tinta);
+    border-radius:var(--radio);
+    padding:12px 20px;
+    box-shadow:3px 3px 0 var(--tinta);
+    font-weight:600;font-size:.95rem;
+  }
+  .dato b{color:var(--moras)}
+
+  /* ---------- SECCIONES ---------- */
+  section{
+    position:relative;z-index:1;
+    max-width:1000px;margin:0 auto;
+    padding:44px 24px;
+  }
+  .titulo-seccion{
+    display:flex;align-items:baseline;gap:14px;
+    margin-bottom:8px;
+  }
+  .titulo-seccion h2{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(2rem,6vw,3rem);
+    letter-spacing:-.03em;
+  }
+  .titulo-seccion .chip{
+    font-size:.85rem;font-weight:700;
+    background:var(--salvia);color:#fff;
+    padding:4px 14px;border-radius:5px;
+    white-space:nowrap;
+  }
+  .desc-seccion{color:#5c4c42;max-width:560px;margin-bottom:32px}
+
+  /* ---------- GALERÍA ---------- */
+  .galeria{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:16px;
+  }
+  .foto{
+    position:relative;
+    border:2px solid var(--tinta);
+    border-radius:var(--radio);
+    overflow:hidden;
+    background:linear-gradient(135deg,var(--rosa),#fff);
+    aspect-ratio:4/3;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease;
+    padding:0;
+  }
+  .foto:nth-child(4n+1){transform:rotate(-1.2deg)}
+  .foto:nth-child(4n+3){transform:rotate(1.2deg)}
+  .foto:hover, .foto:focus-visible{
+    transform:rotate(0) scale(1.03);
+    box-shadow:6px 6px 0 var(--tinta);
+    z-index:2;
+  }
+  .foto:focus-visible{outline:3px dashed var(--moras);outline-offset:3px}
+  .foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .foto .pie{
+    position:absolute;left:0;right:0;bottom:0;
+    background:rgba(51,38,31,.82);color:#fff;
+    font-size:.85rem;padding:6px 12px;
+    opacity:0;transition:opacity .18s ease;
+  }
+  .foto:hover .pie, .foto:focus-visible .pie{opacity:1}
+  .foto.vacia{
+    display:flex;align-items:center;justify-content:center;
+    color:var(--moras);font-weight:700;text-align:center;
+    padding:16px;cursor:default;font-family:var(--display);
+  }
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(51,38,31,.92);
+    display:none;align-items:center;justify-content:center;
+    flex-direction:column;gap:14px;padding:24px;
+  }
+  .lightbox.abierto{display:flex}
+  .lightbox img{
+    max-width:92vw;max-height:78vh;
+    border-radius:6px;border:3px solid #fff;
+  }
+  .lightbox .pie-lb{color:#fff;font-size:1rem;text-align:center}
+  .lb-btn{
+    position:absolute;
+    background:#fff;border:2px solid var(--tinta);
+    border-radius:8px;width:48px;height:48px;
+    font-size:1.3rem;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:3px 3px 0 rgba(0,0,0,.4);
+  }
+  .lb-btn:hover{background:var(--caléndula)}
+  .lb-cerrar{top:20px;right:20px}
+  .lb-ant{left:16px;top:50%;transform:translateY(-50%)}
+  .lb-sig{right:16px;top:50%;transform:translateY(-50%)}
+
+  /* ---------- VIDEO ---------- */
+  #video{background:transparent}
+  .marco-video{
+    position:relative;
+    border:2px solid var(--tinta);
+    border-radius:var(--radio);
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(232,163,61,.25), transparent 45%),
+      radial-gradient(circle at 80% 75%, rgba(122,46,74,.25), transparent 45%),
+      var(--tinta);
+    aspect-ratio:16/9;
+    box-shadow:8px 8px 0 var(--caléndula);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .marco-video video, .marco-video iframe{width:100%;height:100%;display:block;border:0}
+  .placeholder-video{
+    text-align:center;color:#fff;padding:24px;
+  }
+  .boton-play{
+    width:92px;height:92px;border-radius:14px;
+    background:var(--caléndula);
+    border:3px solid #fff;
+    margin:0 auto 18px;
+    display:flex;align-items:center;justify-content:center;
+    animation:latido 2.2s ease-in-out infinite;
+  }
+  .boton-play svg{margin-left:6px}
+  @keyframes latido{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.07)}
+  }
+  .placeholder-video h3{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(1.2rem,3.5vw,1.7rem);
+  }
+  .placeholder-video p{opacity:.8;font-size:.95rem;margin-top:6px}
+  .duracion{
+    display:inline-block;margin-top:14px;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.4);
+    padding:4px 14px;border-radius:5px;
+    font-size:.85rem;
+  }
+
+  /* ---------- PIE ---------- */
+  footer{
+    position:relative;z-index:1;
+    text-align:center;
+    padding:50px 24px 60px;
+    border-top:2px solid var(--tinta);
+    margin-top:30px;
+  }
+  footer .corazon{color:var(--moras)}
+  footer p{color:#5c4c42;font-size:.95rem}
+  footer .firma{
+    font-family:var(--display);font-weight:700;
+    font-size:1.2rem;margin-bottom:6px;color:var(--tinta);
+  }
+
+  @media (max-width:560px){
+    .nav{justify-content:center;padding:12px}
+    .lb-ant{left:8px}.lb-sig{right:8px}
+    .marco-video{box-shadow:5px 5px 0 var(--caléndula)}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ✏️  EDITA AQUÍ TODO EL CONTENIDO (nombre, fecha, contraseña)
+     Baja hasta el script al final del archivo.
+     Las fotos van junto a este index.html: 1.jpg, 2.jpg … 100.jpg
+     El video se carga desde YouTube (VIDEO_YOUTUBE en el script)
+============================================================ -->
+
+<div class="confeti" id="confeti" aria-hidden="true"></div>
+
+<!-- Modal de contraseña: bloquea la página hasta escribir la clave -->
+<div class="candado" id="candado" role="dialog" aria-modal="true" aria-labelledby="tituloCandado">
+  <div class="tarjeta-candado">
+    <div class="mini90">90</div>
+    <h2 id="tituloCandado">Un rincón solo de la familia</h2>
+    <p>Escribe la contraseña para entrar a los recuerdos.</p>
+    <div class="campo-clave">
+      <input type="password" id="claveInput" placeholder="Contraseña"
+             autocomplete="off" aria-label="Contraseña">
+      <button id="claveBtn">Entrar</button>
+    </div>
+    <p class="error-clave" id="claveError" aria-live="polite"></p>
+  </div>
+</div>
+
+<header>
+  <nav class="nav" aria-label="Menú principal">
+    <div class="menus">
+      <a class="video" href="#video">🎬 Película</a>
+      <a class="fotos" href="#fotos">📸 Galería</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <span class="eyebrow" id="eyebrow">Recuerdos de la fiesta</span>
+    <div class="noventa">90</div>
+    <h1 id="tituloHero">Así celebramos los 90 años de la Abuelita</h1>
+    <p class="sub" id="subHero">
+      Nueve décadas de amor, historias y sobremesas. Este rincón guarda
+      los recuerdos del día que celebramos todos juntos.
+    </p>
+  </div>
+
+  <section id="video" aria-labelledby="tituloVideo">
+    <div class="titulo-seccion">
+      <h2 id="tituloVideo">Película</h2>
+    </div>
+
+    <div class="marco-video" id="marcoVideo">
+      <!-- 🎬 El video se carga desde YouTube.
+           Pega tu enlace en VIDEO_YOUTUBE, al inicio del script (abajo). -->
+    </div>
+  </section>
+
+  <section id="fotos" aria-labelledby="tituloFotos">
+    <div class="titulo-seccion">
+      <h2 id="tituloFotos">Galería</h2>
+    </div>
+    <div class="galeria" id="galeria"></div>
+  </section>
+</main>
+
+<footer>
+  <p class="firma" id="firmaPie">Con cariño, la familia <span class="corazon">♥</span></p>
+  <p id="textoPie">Un solo motivo: celebrarla.</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <button class="lb-btn lb-cerrar" id="lbCerrar" aria-label="Cerrar">✕</button>
+  <button class="lb-btn lb-ant" id="lbAnt" aria-label="Foto anterior">‹</button>
+  <img id="lbImg" src="" alt="">
+  <p class="pie-lb" id="lbPie"></p>
+  <button class="lb-btn lb-sig" id="lbSig" aria-label="Foto siguiente">›</button>
+</div>
+
+<script>
+/* ============================================================
+   ✏️ 0. CONTRASEÑA — cámbiala aquí si quieres otra
+============================================================ */
+const CLAVE = "quizandal";
+
+const candado = document.getElementById('candado');
+const claveInput = document.getElementById('claveInput');
+const claveError = document.getElementById('claveError');
+document.body.style.overflow = 'hidden';
+
+function intentarEntrar() {
+  if (claveInput.value.trim().toLowerCase() === CLAVE) {
+    sessionStorage.setItem('familia90', 'si');
+    abrirPagina();
+  } else {
+    claveError.textContent = 'Esa no es… inténtalo de nuevo 🙂';
+    claveInput.value = '';
+    claveInput.focus();
+    candado.classList.remove('error');
+    void candado.offsetWidth; // reinicia la animación
+    candado.classList.add('error');
+  }
+}
+function abrirPagina() {
+  candado.hidden = true;
+  candado.classList.remove('abierto');
+  document.body.style.overflow = '';
+}
+document.getElementById('claveBtn').addEventListener('click', intentarEntrar);
+claveInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') intentarEntrar();
+});
+
+// Si ya entró en esta sesión, no vuelve a pedirla
+if (sessionStorage.getItem('familia90') === 'si') {
+  abrirPagina();
+} else {
+  candado.classList.add('abierto');
+  claveInput.focus();
+}
+
+/* ============================================================
+   ✏️ 1. DATOS DE LA FIESTA — edita libremente
+============================================================ */
+const CONFIG = {
+  nombre: "Abuelita",               // p. ej. "Abuelita Carmen"
+};
+
+/* ============================================================
+   ✏️ 1b. VIDEO DE YOUTUBE — pega aquí tu enlace.
+   Sirve cualquier formato:
+   https://www.youtube.com/watch?v=XXXXXXXX
+   https://youtu.be/XXXXXXXX
+   Déjalo vacío ("") mientras no tengas el video.
+============================================================ */
+const VIDEO_YOUTUBE = "https://www.youtube.com/watch?v=sqrQRSeuYv4";
+
+/* ============================================================
+   ✏️ 2. FOTOS — se buscan automáticamente los archivos
+   1.jpg, 2.jpg, 3.jpg … hasta 100.jpg (junto a este index.html).
+   Sube tus fotos con esos nombres exactos y aparecerán solas.
+   Las que no existan simplemente no se muestran.
+   Si tienes más de 100, sube este número:
+============================================================ */
+const TOTAL_FOTOS = 100;
+
+const FOTOS = [];
+for (let n = 1; n <= TOTAL_FOTOS; n++) {
+  FOTOS.push({ src: n + ".jpg", pie: "Foto " + n });
+}
+
+/* ============================================================
+   Lo de abajo no necesitas tocarlo 🙂
+============================================================ */
+
+// Textos del hero
+document.getElementById('tituloHero').textContent = 'Así celebramos los 90 años de la ' + CONFIG.nombre;
+
+// Video de YouTube
+const marco = document.getElementById('marcoVideo');
+function extraerIdYoutube(url) {
+  const m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+const videoId = extraerIdYoutube(VIDEO_YOUTUBE);
+if (videoId) {
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?rel=0';
+  iframe.title = 'Video de la fiesta';
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  iframe.allowFullscreen = true;
+  iframe.loading = 'lazy';
+  marco.appendChild(iframe);
+} else {
+  marco.innerHTML =
+    '<div class="placeholder-video">' +
+      '<div class="boton-play" aria-hidden="true">' +
+        '<svg width="36" height="36" viewBox="0 0 24 24" fill="#33261F"><path d="M8 5v14l11-7z"/></svg>' +
+      '</div>' +
+      '<h3>Aquí irá la película de la fiesta</h3>' +
+      '<p>Muy pronto podrás verla completa en esta misma página.</p>' +
+    '</div>';
+}
+
+// Galería: solo se muestran las fotos que realmente existan en el repo
+const galeria = document.getElementById('galeria');
+const cargadas = [];   // índices de FOTOS que sí cargaron, en orden
+
+const avisoVacio = document.createElement('div');
+avisoVacio.className = 'foto vacia';
+avisoVacio.innerHTML = 'Aún no hay fotos.<br>¡Pronto llegarán los recuerdos! 📷';
+galeria.appendChild(avisoVacio);
+
+FOTOS.forEach((f, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'foto';
+  btn.hidden = true;
+  btn.setAttribute('aria-label', f.pie);
+  const img = document.createElement('img');
+  img.src = f.src;
+  img.alt = f.pie;
+  img.loading = 'lazy';
+  img.onload = () => {
+    btn.hidden = false;
+    avisoVacio.remove();
+    cargadas.push(i);
+    cargadas.sort((a, b) => a - b);
+  };
+  img.onerror = () => btn.remove();
+  const pie = document.createElement('span');
+  pie.className = 'pie';
+  pie.textContent = f.pie;
+  btn.append(img, pie);
+  btn.addEventListener('click', () => abrirLightbox(i));
+  galeria.appendChild(btn);
+});
+
+// Lightbox
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbPie = document.getElementById('lbPie');
+let idxActual = 0;
+
+function abrirLightbox(i) {
+  idxActual = i;
+  mostrarFoto();
+  lb.classList.add('abierto');
+  document.getElementById('lbCerrar').focus();
+}
+function mostrarFoto() {
+  const f = FOTOS[idxActual];
+  lbImg.src = f.src;
+  lbImg.alt = f.pie;
+  const pos = cargadas.indexOf(idxActual) + 1;
+  lbPie.textContent = f.pie + '  ·  ' + pos + ' / ' + cargadas.length;
+}
+function cerrarLightbox() { lb.classList.remove('abierto'); }
+function moverFoto(dir) {
+  if (cargadas.length === 0) return;
+  const pos = cargadas.indexOf(idxActual);
+  idxActual = cargadas[(pos + dir + cargadas.length) % cargadas.length];
+  mostrarFoto();
+}
+document.getElementById('lbCerrar').addEventListener('click', cerrarLightbox);
+document.getElementById('lbAnt').addEventListener('click', () => moverFoto(-1));
+document.getElementById('lbSig').addEventListener('click', () => moverFoto(1));
+lb.addEventListener('click', e => { if (e.target === lb) cerrarLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('abierto')) return;
+  if (e.key === 'Escape') cerrarLightbox();
+  if (e.key === 'ArrowLeft') moverFoto(-1);
+  if (e.key === 'ArrowRight') moverFoto(1);
+});
+
+// Confeti ambiental (ligero, respeta reduced-motion)
+const colores = ['#E8A33D', '#7A2E4A', '#8FAE8B', '#F3D9CF'];
+const confeti = document.getElementById('confeti');
+for (let i = 0; i < 26; i++) {
+  const s = document.createElement('span');
+  s.style.left = Math.random() * 100 + 'vw';
+  s.style.background = colores[i % colores.length];
+  s.style.animationDuration = (7 + Math.random() * 8) + 's';
+  s.style.animationDelay = (-Math.random() * 12) + 's';
+  s.style.width = s.style.height = (6 + Math.random() * 7) + 'px';
+  if (i % 3 === 0) s.style.borderRadius = '50%';
+  confeti.appendChild(s);
+}
+</script>
+</body>
+</html>
