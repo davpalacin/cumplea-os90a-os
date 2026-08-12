@@ -508,18 +508,14 @@ const CONFIG = {
 const VIDEO_YOUTUBE = "https://youtu.be/JOOl4J-YBkc";
 
 /* ============================================================
-   ✏️ 2. FOTOS — se buscan automáticamente los archivos
-   1.jpg, 2.jpg, 3.jpg … hasta 200.jpg (junto a este index.html).
-   Sube tus fotos con esos nombres exactos y aparecerán solas.
-   Las que no existan simplemente no se muestran.
-   Si tienes más de 200, sube este número:
+   ✏️ 2. FOTOS — se buscan automáticamente por número:
+   1, 2, 3 … hasta 200 (junto a este index.html).
+   No hace falta que estén todas: si solo subes la 4, la 6 y
+   la 120, se verán esas tres. Se prueban solas las
+   extensiones .jpg .JPG .jpeg .JPEG .png .PNG
 ============================================================ */
 const TOTAL_FOTOS = 200;
-
-const FOTOS = [];
-for (let n = 1; n <= TOTAL_FOTOS; n++) {
-  FOTOS.push({ src: n + ".jpg", pie: "Foto " + n });
-}
+const EXTENSIONES = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG"];
 
 /* ============================================================
    Lo de abajo no necesitas tocarlo 🙂
@@ -554,63 +550,93 @@ if (videoId) {
     '</div>';
 }
 
-// Galería: solo se muestran las fotos que realmente existan en el repo
+// Galería: sondea cada número con varias extensiones y muestra solo las que existen
 const galeria = document.getElementById('galeria');
-const cargadas = [];   // índices de FOTOS que sí cargaron, en orden
+const encontradas = {};   // n -> url real de la foto
+const cargadas = [];      // números encontrados, en orden
 
 const avisoVacio = document.createElement('div');
 avisoVacio.className = 'foto vacia';
 avisoVacio.innerHTML = 'Aún no hay fotos.<br>¡Pronto llegarán los recuerdos! 📷';
 galeria.appendChild(avisoVacio);
 
-FOTOS.forEach((f, i) => {
+function crearTarjeta(n, url) {
   const btn = document.createElement('button');
   btn.className = 'foto';
-  btn.hidden = true;
-  btn.setAttribute('aria-label', f.pie);
+  btn.dataset.n = n;
+  btn.setAttribute('aria-label', 'Foto ' + n);
   const img = document.createElement('img');
-  img.src = f.src;
-  img.alt = f.pie;
+  img.src = url;
+  img.alt = 'Foto ' + n;
   img.loading = 'lazy';
-  img.onload = () => {
-    btn.hidden = false;
-    avisoVacio.remove();
-    cargadas.push(i);
-    cargadas.sort((a, b) => a - b);
-  };
-  img.onerror = () => btn.remove();
   const pie = document.createElement('span');
   pie.className = 'pie';
-  pie.textContent = f.pie;
+  pie.textContent = 'Foto ' + n;
   btn.append(img, pie);
-  btn.addEventListener('click', () => abrirLightbox(i));
-  galeria.appendChild(btn);
-});
+  btn.addEventListener('click', () => abrirLightbox(n));
+  // Insertar en orden numérico aunque las fotos carguen en desorden
+  const siguiente = [...galeria.querySelectorAll('.foto[data-n]')]
+    .find(el => Number(el.dataset.n) > n);
+  galeria.insertBefore(btn, siguiente || null);
+}
+
+function sondearFoto(n) {
+  return new Promise(resolve => {
+    let e = 0;
+    const probador = new Image();
+    probador.onload = () => {
+      const url = n + '.' + EXTENSIONES[e];
+      encontradas[n] = url;
+      cargadas.push(n);
+      cargadas.sort((a, b) => a - b);
+      avisoVacio.remove();
+      crearTarjeta(n, url);
+      resolve();
+    };
+    probador.onerror = () => {
+      e++;
+      if (e < EXTENSIONES.length) {
+        probador.src = n + '.' + EXTENSIONES[e];
+      } else {
+        resolve(); // ese número no existe con ninguna extensión
+      }
+    };
+    probador.src = n + '.' + EXTENSIONES[0];
+  });
+}
+
+// Sondear en tandas de 10 para no saturar el navegador
+(async () => {
+  for (let n = 1; n <= TOTAL_FOTOS; n += 10) {
+    const tanda = [];
+    for (let k = n; k < n + 10 && k <= TOTAL_FOTOS; k++) tanda.push(sondearFoto(k));
+    await Promise.all(tanda);
+  }
+})();
 
 // Lightbox
 const lb = document.getElementById('lightbox');
 const lbImg = document.getElementById('lbImg');
 const lbPie = document.getElementById('lbPie');
-let idxActual = 0;
+let nActual = 0;
 
-function abrirLightbox(i) {
-  idxActual = i;
+function abrirLightbox(n) {
+  nActual = n;
   mostrarFoto();
   lb.classList.add('abierto');
   document.getElementById('lbCerrar').focus();
 }
 function mostrarFoto() {
-  const f = FOTOS[idxActual];
-  lbImg.src = f.src;
-  lbImg.alt = f.pie;
-  const pos = cargadas.indexOf(idxActual) + 1;
-  lbPie.textContent = f.pie + '  ·  ' + pos + ' / ' + cargadas.length;
+  lbImg.src = encontradas[nActual];
+  lbImg.alt = 'Foto ' + nActual;
+  const pos = cargadas.indexOf(nActual) + 1;
+  lbPie.textContent = 'Foto ' + nActual + '  ·  ' + pos + ' / ' + cargadas.length;
 }
 function cerrarLightbox() { lb.classList.remove('abierto'); }
 function moverFoto(dir) {
   if (cargadas.length === 0) return;
-  const pos = cargadas.indexOf(idxActual);
-  idxActual = cargadas[(pos + dir + cargadas.length) % cargadas.length];
+  const pos = cargadas.indexOf(nActual);
+  nActual = cargadas[(pos + dir + cargadas.length) % cargadas.length];
   mostrarFoto();
 }
 document.getElementById('lbCerrar').addEventListener('click', cerrarLightbox);
